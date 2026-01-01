@@ -1,40 +1,17 @@
-from fastapi import FastAPI
-from enum import Enum
-app = FastAPI()
+from bs4 import BeautifulSoup
 
-# @app.get("/hello/{name}")
-# def hello(name):
-#     return f"Hello {name}"
-food_items = {
-        'indian':["Samosa","Dosa"],
-        'american':["Hot Dog","Apple Pie"],
-        'italian':['Ravioli','Pizza']
-    }
-
-class AvailableCussines(str,Enum):
-    indian = "indian"
-    american = "american"
-    italian = "italian"
+with open('home.html','r') as html_file:
+    content = html_file.read()
     
-@app.get("/get_cussine/{cussine}")
-def get_food(cussine:AvailableCussines):
-    return food_items.get(cussine)  
-
-coupon_code ={
-    1:'10%',
-    2:'20%',
-    3:'30%'
-}
-@app.get("/get_coupon/{code}")
-async def get_items(code:int):
-    return {'discount_amount':coupon_code.get(code)}
-# @app.get("/get_cussine/{cussine}")
-# def get_food(cussine):
-#     items = food_items.get(cussine)
-#     if not items:
-#         return f"{cussine} cussine is not available"
-#     return items
-
-# @app.get("/")
-# def hello():
-#     return "Hello World"
+    soup = BeautifulSoup(content,'lxml')
+    # print(soup.prettify())
+    # courses_html_tags = soup.find_all('h5')
+    # # print(courses_html_tags)
+    # for course in courses_html_tags:
+    #     print(course.text)
+    course_cards = soup.find_all('div',class_='card')
+    for course in course_cards:
+        course_name = course.h5.text
+        course_price = course.a.text.split()[-1]
+        print(f'{course_name} costs {course_price}')
+        
